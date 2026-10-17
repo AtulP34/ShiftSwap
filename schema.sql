@@ -50,11 +50,11 @@
 -- =====================================================================
 
 
--- ---------------------------------------------------------------------
+--       ---------
 -- Start fresh: drop old tables if they exist.
 -- Children (tables that point at other tables) are dropped before their
 -- parents, so we never drop a table that something still points at.
--- ---------------------------------------------------------------------
+--       ---------
 DROP TABLE IF EXISTS notifications;
 DROP TABLE IF EXISTS request_events;
 DROP TABLE IF EXISTS requests;
@@ -68,14 +68,14 @@ DROP TABLE IF EXISTS workplaces;
 DROP TABLE IF EXISTS users;
 
 
--- ---------------------------------------------------------------------
+--       ---------
 -- users
 -- One row per person who has a ShiftLink account.
 -- Screens: sign up, log in, profile.
 -- Relations: a user joins workplaces through `memberships`, holds roles
 -- through `member_roles`, is assigned `shifts`, has availability, makes
 -- `requests`, and receives `notifications`.
--- ---------------------------------------------------------------------
+--       ---------
 CREATE TABLE users (
     id            INTEGER PRIMARY KEY,  -- unique number for each user; SQLite fills it in automatically
     name          TEXT NOT NULL,        -- display name shown on the schedule; NOT NULL so nobody shows up blank
@@ -85,14 +85,14 @@ CREATE TABLE users (
 );
 
 
--- ---------------------------------------------------------------------
+--       ---------
 -- workplaces
 -- One row per business (for example "Joe's Diner").
 -- Screens: create workplace, join workplace (by invite code), workplace
 -- dashboard.
 -- Relations: a workplace has many members (`memberships`), many `roles`,
 -- and many `shifts`.
--- ---------------------------------------------------------------------
+--       ---------
 CREATE TABLE workplaces (
     id          INTEGER PRIMARY KEY,   -- unique number for each workplace
     name        TEXT NOT NULL,         -- business name shown in the header
@@ -101,14 +101,14 @@ CREATE TABLE workplaces (
 );
 
 
--- ---------------------------------------------------------------------
+--       ---------
 -- memberships
 -- Connects users to workplaces (a "join table"). One row means "this
 -- user works at this workplace." A person can work at more than one
 -- place, and a place has many people, so we need this middle table.
 -- Screens: join workplace, member list, manager settings.
 -- Relations: points at `users` and `workplaces`.
--- ---------------------------------------------------------------------
+--       ---------
 CREATE TABLE memberships (
     -- which user; CASCADE: if the user account is deleted, their membership means nothing, so remove it
     user_id      INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -123,13 +123,13 @@ CREATE TABLE memberships (
 );
 
 
--- ---------------------------------------------------------------------
+--       ---------
 -- roles
 -- Job positions at a workplace (for example "Cashier", "Cook").
 -- Screens: manager role settings, schedule (each shift shows its role).
 -- Relations: belongs to one workplace; linked to users through
 -- `member_roles`; each shift needs one role.
--- ---------------------------------------------------------------------
+--       ---------
 CREATE TABLE roles (
     id           INTEGER PRIMARY KEY,  -- unique number for each role
     -- which workplace this role belongs to; CASCADE: roles of a deleted workplace are useless
@@ -141,7 +141,7 @@ CREATE TABLE roles (
 );
 
 
--- ---------------------------------------------------------------------
+--       ---------
 -- member_roles
 -- Which roles each person is trained for. One row means "this user can
 -- work this role." Used so the app only offers a shift to coworkers who
@@ -150,7 +150,7 @@ CREATE TABLE roles (
 -- Relations: join table between `users` and `roles`.
 -- Note: the database does not check that the user is a member of the
 -- role's workplace. The app checks that when adding a row.
--- ---------------------------------------------------------------------
+--       ---------
 CREATE TABLE member_roles (
     -- which user; CASCADE: a deleted user no longer holds any roles
     user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -161,7 +161,7 @@ CREATE TABLE member_roles (
 );
 
 
--- ---------------------------------------------------------------------
+--       ---------
 -- shifts
 -- THE SCHEDULE. One row is one block of work: who, which role, when.
 -- This is the "source of truth" that only changes when a manager
@@ -169,7 +169,7 @@ CREATE TABLE member_roles (
 -- Screens: my schedule, workplace schedule, request screen.
 -- Relations: belongs to a workplace and a role; assigned to a user;
 -- `requests` point at shifts.
--- ---------------------------------------------------------------------
+--       ---------
 CREATE TABLE shifts (
     id           INTEGER PRIMARY KEY,  -- unique number for each shift
     -- which workplace; CASCADE: deleting a workplace deletes its whole schedule
@@ -196,14 +196,14 @@ CREATE TABLE shifts (
 );
 
 
--- ---------------------------------------------------------------------
+--       ---------
 -- availability_weekly
 -- A user's normal repeating availability, like "every Monday 09:00 to
 -- 17:00." A user can have several rows (several windows per week).
 -- Screens: my availability.
 -- Relations: belongs to one user. The app reads this to suggest which
 -- coworkers could take a shift.
--- ---------------------------------------------------------------------
+--       ---------
 CREATE TABLE availability_weekly (
     id         INTEGER PRIMARY KEY,  -- unique number for each availability window
     -- whose availability; CASCADE: a deleted user's availability is useless
@@ -221,7 +221,7 @@ CREATE TABLE availability_weekly (
 );
 
 
--- ---------------------------------------------------------------------
+--       ---------
 -- availability_exceptions
 -- One-off changes to the weekly pattern, for a single date. Examples:
 -- "unavailable 2026-11-26 all day (Thanksgiving)" or "available
@@ -229,7 +229,7 @@ CREATE TABLE availability_weekly (
 -- Screens: my availability (exceptions section).
 -- Relations: belongs to one user. Overrides `availability_weekly` for
 -- that date when the app checks who is free.
--- ---------------------------------------------------------------------
+--       ---------
 CREATE TABLE availability_exceptions (
     id         INTEGER PRIMARY KEY,  -- unique number for each exception
     -- whose exception; CASCADE: a deleted user's exceptions are useless
@@ -247,7 +247,7 @@ CREATE TABLE availability_exceptions (
 );
 
 
--- ---------------------------------------------------------------------
+--       ---------
 -- requests
 -- A request to give away a shift (coverage) or trade it (swap).
 -- This is where trades "wait" while they move through the steps. The
@@ -260,7 +260,7 @@ CREATE TABLE availability_exceptions (
 -- Relations: points at the shift being given away, the person asking,
 -- optionally a specific coworker, and (for swaps) the shift offered in
 -- return. Its history lives in `request_events`.
--- ---------------------------------------------------------------------
+--       ---------
 CREATE TABLE requests (
     id               INTEGER PRIMARY KEY,  -- unique number for each request
     -- 'coverage' = "someone please take my shift", 'swap' = "trade shifts with me"; CHECK blocks any other word
@@ -298,7 +298,7 @@ CREATE TABLE requests (
 );
 
 
--- ---------------------------------------------------------------------
+--       ---------
 -- request_events
 -- The change history (audit log) for requests. Every time a request's
 -- status changes, the app adds one row here. Rows are only ever added,
@@ -307,7 +307,7 @@ CREATE TABLE requests (
 -- up with someone.
 -- Screens: request detail page (timeline).
 -- Relations: belongs to one request; points at the user who acted.
--- ---------------------------------------------------------------------
+--       ---------
 CREATE TABLE request_events (
     id          INTEGER PRIMARY KEY,  -- unique number for each event
     -- which request changed; CASCADE: if the request itself is removed, its history goes with it
@@ -327,13 +327,13 @@ CREATE TABLE request_events (
 );
 
 
--- ---------------------------------------------------------------------
+--       ---------
 -- notifications
 -- Messages shown to a user, like "Sam accepted your swap" or "Your
 -- request was approved."
 -- Screens: notification bell / inbox.
 -- Relations: belongs to one user.
--- ---------------------------------------------------------------------
+--       ---------
 CREATE TABLE notifications (
     id         INTEGER PRIMARY KEY,  -- unique number for each notification
     -- who should see it; CASCADE: a deleted user's notifications are useless
