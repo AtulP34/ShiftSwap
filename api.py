@@ -477,3 +477,230 @@ def team_availability(wp):
         {"id": m["id"], "name": m["name"], "available": is_available(m["id"], start, end)}
         for m in members
     ])
+
+
+#   matching  
+ 
+@app.get("/api/shifts/<int:shift_id>/coverage")
+@login_required
+def coverage_options(shift_id):
+    """Who can take my shift, and why others can't."""
+    shift = load_shift(shift_id)
+    if shift is None:
+        return error("Shift not found", 404)
+    if shift["assignee_id"] != me():
+        return error("You can only find coverage for your own shift", 403)
+    return jsonify(find_coverage(shift_id))
+ 
+ 
+@app.get("/api/shifts/<int:shift_id>/swap-options")
+@login_required
+def swap_options(shift_id):
+    """Which coworker shifts can I trade mine for."""
+    shift = load_shift(shift_id)
+    if shift is None:
+        return error("Shift not found", 404)
+    if shift["assignee_id"] != me():
+        return error("You can only swap your own shift", 403)
+ 
+    others = shifts_where(
+        "s.workplace_id = ? AND s.assignee_id != ? AND s.start_dt > ?",
+        (shift["workplace_id"], me(), now()),
+    )
+ 
+    eligible, ineligible = [], []
+    for other in others:
+        ok, reasons = can_swap(shift_id, other["id"])  # checks both people
+        if ok:
+            eligible.append(other)
+        else:
+            ineligible.append({**other, "reasons": reasons})
+    return jsonify({"eligible": eligible, "ineligible": ineligible})
+ 
+ 
+#   requests  
+ 
+@app.post("/api/requests")
+@login_required
+def new_request():
+    """Start coverage or swap request. Rules live in create_request()."""
+    data, missing = body("type", "shift_id")
+    if missing:
+        return error("Missing: " + ", ".join(missing))
+ 
+    ok, result = create_request(
+        me(),
+        data["type"],
+        data["shift_id"],
+        data.get("target_user_id"),    # empty = ask whole team
+        data.get("offered_shift_id"),  # swaps only
+    )
+    if not ok:
+        return error(result)
+    return jsonify(load_request(result)), 201
+ 
+ 
+@app.get("/api/requests")
+@login_required
+def list_requests():
+    """?box=sent (I asked) | received (waiting on me) | history (done)."""
+    box = request.args.get("box", "sent")
+ 
+    if box == "sent":
+        return jsonify(requests_where(
+            "rq.requester_id = ? AND rq.status IN (?, ?)", (me(), *OPEN_STATUSES)))
+ 
+    if box == "received":
+        direct = requests_where("rq.target_user_id = ? AND rq.status = 'awaiting_coworker'", (me(),))
+        team_posts = requests_where(
+            """rq.target_user_id IS NULL
+               AND rq.status = 'awaiting_coworker'
+               AND rq.requester_id != ?
+               AND s.workplace_id IN (SELECT workplace_id FROM memberships WHERE user_id = ?)""",
+            (me(), me()),
+        )
+        # only show team posts I can actually cover
+        mine = []
+        for post in team_posts:
+            eligible_ids = {p["id"] for p in find_coverage(post["shift_id"])["eligible"]}
+            if me() in eligible_ids:
+                mine.append(post)
+        return jsonify(direct + mine)
+ 
+    if box == "history":
+        return jsonify(requests_where(
+            "(rq.requester_id = ? OR rq.target_user_id = ?) AND rq.status IN (?, ?, ?)",
+            (me(), me(), *FINAL_STATUSES)))
+ 
+    return error("box must be sent, received, or history")
+ 
+ 
+@app.get("/api/requests/<int:request_id>")
+@login_required
+def request_detail(request_id):
+    """One request + every status change it went through."""
+    req = load_request(request_id)
+    if req is None:
+        return error("Request not found", 404)
+ 
+    involved = me() in (req["requester_id"], req["target_user_id"])
+    if not involved and not is_manager(req["workplace_id"]):
+        return error("Not allowed", 403)
+ 
+    req["events"] = rows(query(
+        """SELECT e.from_status, e.to_status, e.note, e.at, u.name AS actor_name
+           FROM request_events e JOIN users u ON u.id = e.actor_id
+           WHERE e.request_id = ? ORDER BY e.at""",
+        (request_id,),
+    ))
+    return jsonify(req)
+ 
+ 
+@app.post("/api/requests/<int:request_id>/accept")
+@login_required
+def accept_request(request_id):
+    """Coworker says yes."""
+    return run_action(accept, request_id)
+ 
+ 
+@app.post("/api/requests/<int:request_id>/decline")
+@login_required
+def decline_request(request_id):
+    """Coworker says no."""
+    return run_action(decline, request_id)
+ 
+ 
+@app.post("/api/requests/<int:request_id>/cancel")
+@login_required
+def cancel_request(request_id):
+    """Asker takes it back."""
+    return run_action(cancel, request_id)
+ 
+ 
+#   manager  
+ 
+@app.get("/api/workplaces/<int:wp>/pending")
+@login_required
+def pending_approvals(wp):
+    """Stuff waiting for boss. Shows before vs after."""
+    if not is_manager(wp):
+        return error("Managers only", 403)
+ 
+    pending = requests_where("s.workplace_id = ? AND rq.status = 'awaiting_manager'", (wp,))
+    for p in pending:
+        p["original_assignee"] = p["requester_name"]
+        p["proposed_assignee"] = p["target_name"]
+    return jsonify(pending)
+ 
+ 
+@app.post("/api/requests/<int:request_id>/approve")
+@login_required
+def approve_request(request_id):
+    """Boss says yes. Only place schedule ever changes (inside approve())."""
+    return run_action(approve, request_id)
+ 
+ 
+@app.post("/api/requests/<int:request_id>/reject")
+@login_required
+def reject_request(request_id):
+    """Boss says no, maybe with note."""
+    data, _ = body()
+    return run_action(manager_decline, request_id, data.get("note"))
+ 
+ 
+@app.get("/api/workplaces/<int:wp>/history")
+@login_required
+def approval_history(wp):
+    """Every status change in workplace, newest first."""
+    if not is_manager(wp):
+        return error("Managers only", 403)
+    return jsonify(rows(query(
+        """SELECT e.request_id, e.from_status, e.to_status, e.note, e.at,
+                  u.name AS actor_name, rq.type, s.start_dt, s.end_dt
+           FROM request_events e
+           JOIN users u     ON u.id = e.actor_id
+           JOIN requests rq ON rq.id = e.request_id
+           JOIN shifts s    ON s.id = rq.shift_id
+           WHERE s.workplace_id = ?
+           ORDER BY e.at DESC""",
+        (wp,),
+    )))
+ 
+ 
+#   notifications  
+ 
+@app.get("/api/notifications")
+@login_required
+def list_notifications():
+    """My last 50 notifications + unread count."""
+    items = rows(query(
+        "SELECT * FROM notifications WHERE user_id = ? ORDER BY created_at DESC LIMIT 50", (me(),)))
+    return jsonify({"unread": unread_count(me()), "items": items})
+ 
+ 
+@app.post("/api/notifications/read")
+@login_required
+def read_notifications():
+    """Mark all mine as read."""
+    mark_read(me())
+    return jsonify({"ok": True})
+ 
+ 
+#   errors  
+ 
+@app.errorhandler(404)
+def not_found(e):
+    """API gets JSON error. Pages get main page."""
+    if request.path.startswith("/api/"):
+        return error("Not found", 404)
+    return send_from_directory(app.static_folder, "index.html")
+ 
+ 
+@app.errorhandler(500)
+def server_error(e):
+    """Something broke."""
+    return error("Something went wrong on the server", 500)
+ 
+ 
+if __name__ == "__main__":
+    app.run(debug=True)  # auto-restart on save. turn off for real deploy.
