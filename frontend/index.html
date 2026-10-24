@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#f6f8fc">
+  <title>Schedule · ShiftSwap</title>
+  <link rel="stylesheet" href="tailwind.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <svg xmlns="http://www.w3.org/2000/svg" class="icon-library" aria-hidden="true">
+    <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4M17 3v4M3 10h18"/></symbol>
+    <symbol id="i-arrows" viewBox="0 0 24 24"><path d="M4 8h15l-3-3m3 3-3 3M20 16H5l3-3m-3 3 3 3"/></symbol>
+    <symbol id="i-clipboard" viewBox="0 0 24 24"><rect x="5" y="5" width="14" height="16" rx="2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 12h6M9 16h4"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+    <symbol id="i-people" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
+    <symbol id="i-chevron-left" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></symbol>
+    <symbol id="i-chevron-right" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
+    <symbol id="i-arrow-up-right" viewBox="0 0 24 24"><path d="M7 17 17 7M8 7h9v9"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></symbol>
+    <symbol id="i-spark" viewBox="0 0 24 24"><path d="m12 3 1.7 6.3L20 11l-6.3 1.7L12 19l-1.7-6.3L4 11l6.3-1.7L12 3ZM19 17l.6 1.4L21 19l-1.4.6L19 21l-.6-1.4L17 19l1.4-.6L19 17Z"/></symbol>
+    <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="m5 5 14 14M19 5 5 19"/></symbol>
+    <symbol id="i-location" viewBox="0 0 24 24"><path d="M20 10c0 5.5-8 11-8 11S4 15.5 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></symbol>
+    <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></symbol>
+  </svg>
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar">
+      <a class="brand" href="#schedule" aria-label="ShiftSwap schedule">
+        <span class="brand-mark"><svg class="icon"><use href="#i-arrows"></use></svg></span>
+        <span>Shift<span class="brand-accent">Swap</span></span>
+      </a>
+      <div class="workspace-switcher"><span class="workspace-logo">S</span><span class="workspace-copy"><strong>ShiftSwap HQ</strong><small>Team workspace</small></span><span class="workspace-dot"></span></div>
+      <div class="nav-section-label">WORKSPACE</div>
+      <nav class="sidebar-nav" aria-label="Main navigation">
+        <a href="#schedule" class="nav-link active" data-page="schedule" aria-current="page"><svg class="icon"><use href="#i-calendar"></use></svg><span>Schedule</span></a>
+        <a href="#requests" class="nav-link" data-page="requests"><svg class="icon"><use href="#i-arrows"></use></svg><span>Requests</span><span class="nav-soon">Soon</span></a>
+        <a href="#availability" class="nav-link" data-page="availability"><svg class="icon"><use href="#i-clock"></use></svg><span>Availability</span><span class="nav-soon">Soon</span></a>
+        <a href="#manager" class="nav-link" data-page="manager"><svg class="icon"><use href="#i-people"></use></svg><span>Manager</span><span class="nav-soon">Soon</span></a>
+      </nav>
+      <div class="sidebar-bottom">
+        <div class="side-note"><span class="side-note-icon"><svg class="icon"><use href="#i-spark"></use></svg></span><strong>Less shift stress.</strong><p>Keep your team in sync, all in one place.</p></div>
+        <div class="sidebar-user"><span class="avatar">AP</span><span><strong>Aditya P.</strong><small>Team member</small></span><span class="online-indicator" aria-label="Demo profile"></span></div>
+      </div>
+    </aside>
+    <div class="main-wrap">
+      <header class="topbar">
+        <div class="topbar-left"><button type="button" class="menu-toggle icon-button" id="menuToggle" aria-label="Open navigation" aria-expanded="false"><svg class="icon"><use href="#i-menu"></use></svg></button><span>Workspace</span><span class="breadcrumb-separator">/</span><strong id="breadcrumb">Schedule</strong></div>
+        <div class="topbar-right"><span class="preview-badge"><span></span> Preview mode</span><span class="topbar-divider"></span><span class="topbar-profile"><span class="avatar avatar-small">AP</span>Aditya</span></div>
+      </header>
+      <main class="main-content">
+        <section id="schedulePage" aria-labelledby="pageTitle">
+          <div class="page-heading"><div><span class="eyebrow"><span class="eyebrow-line"></span> YOUR WORKSPACE</span><h1 id="pageTitle">Your schedule<span class="heading-period">.</span></h1><p>Stay on top of every shift, all in one place.</p></div><div class="heading-actions"><button type="button" id="todayButton" class="button secondary-button">Today</button><div class="week-controls" role="group" aria-label="Change displayed week"><button type="button" id="previousWeek" class="icon-button" aria-label="Previous week"><svg class="icon"><use href="#i-chevron-left"></use></svg></button><span id="weekRange" aria-live="polite"></span><button type="button" id="nextWeek" class="icon-button" aria-label="Next week"><svg class="icon"><use href="#i-chevron-right"></use></svg></button></div></div></div>
+          <div class="stats-grid" aria-label="Weekly overview">
+            <article class="stat-card"><div class="stat-top"><span>Scheduled hours</span><span class="stat-icon blue"><svg class="icon"><use href="#i-clock"></use></svg></span></div><div class="stat-number" id="hoursValue">—</div><p>Across your shifts this week</p><div class="stat-corner"></div></article>
+            <article class="stat-card"><div class="stat-top"><span>Your shifts</span><span class="stat-icon violet"><svg class="icon"><use href="#i-calendar"></use></svg></span></div><div class="stat-number" id="shiftsValue">—</div><p>Assigned to you this week</p></article>
+            <article class="stat-card"><div class="stat-top"><span>Open shifts</span><span class="stat-icon orange"><svg class="icon"><use href="#i-people"></use></svg></span></div><div class="stat-number" id="openValue">—</div><p>Available for team coverage</p></article>
+          </div>
+          <section class="calendar-panel" aria-labelledby="weekTitle">
+            <div class="section-heading"><div><h2 id="weekTitle">Week at a glance</h2><p id="calendarSubtitle">Your team's shifts, organized by day.</p></div><div class="filter-group" aria-label="Filter shifts" role="group"><button type="button" class="filter-button active" data-filter="all" aria-pressed="true">All shifts</button><button type="button" class="filter-button" data-filter="mine" aria-pressed="false">My shifts</button></div></div>
+            <div class="calendar-scroll"><div id="calendarGrid" class="calendar-grid" aria-live="polite"></div></div>
+            <div class="calendar-foot"><span><span class="legend-dot my-dot"></span> Your shift</span><span><span class="legend-dot team-dot"></span> Team shift</span><span><span class="legend-dot open-dot"></span> Open shift</span><span class="calendar-hint">Select a shift to see its details</span></div>
+          </section>
+          <div class="bottom-grid">
+            <section class="next-panel" aria-labelledby="nextTitle"><div class="section-heading compact-heading"><div><span class="panel-eyebrow">COMING UP</span><h2 id="nextTitle">Your next shift</h2></div><span class="little-accent"><svg class="icon"><use href="#i-arrow-up-right"></use></svg></span></div><div id="nextShiftContent" class="next-content"></div></section>
+            <section class="activity-panel" aria-labelledby="activityTitle"><div class="section-heading compact-heading"><div><span class="panel-eyebrow">TEAM UPDATES</span><h2 id="activityTitle">Latest activity</h2></div><span class="activity-mark"><svg class="icon"><use href="#i-check"></use></svg></span></div><div class="activity-entry"><span class="activity-check"><svg class="icon"><use href="#i-check"></use></svg></span><div><strong>Shift covered</strong><p>Aditya's shift was approved by a manager.</p><small>Example team update</small></div></div></section>
+          </div>
+          <p class="footer-note">ShiftSwap frontend preview · Sample schedule data for layout testing</p>
+        </section>
+        <section id="placeholderPage" class="placeholder-page" hidden aria-labelledby="placeholderTitle"><span class="eyebrow"><span class="eyebrow-line"></span> COMING NEXT</span><div class="placeholder-icon"><svg class="icon"><use href="#i-clipboard"></use></svg></div><h1 id="placeholderTitle"></h1><p id="placeholderDescription"></p><button type="button" class="button primary-button" id="backToSchedule"><svg class="icon"><use href="#i-calendar"></use></svg> Back to schedule</button></section>
+      </main>
+    </div>
+  </div>
+  <div class="drawer-backdrop" id="drawerBackdrop" hidden></div>
+  <dialog id="shiftDialog" class="shift-dialog" aria-labelledby="dialogTitle"><form method="dialog"><div class="dialog-top"><span class="eyebrow">SHIFT DETAILS</span><button type="submit" class="icon-button" aria-label="Close shift details"><svg class="icon"><use href="#i-x"></use></svg></button></div><div class="dialog-icon"><svg class="icon"><use href="#i-calendar"></use></svg></div><h2 id="dialogTitle"></h2><p id="dialogDate"></p><div class="dialog-info"><div><svg class="icon"><use href="#i-clock"></use></svg><span id="dialogTime"></span></div><div><svg class="icon"><use href="#i-location"></use></svg><span id="dialogLocation"></span></div><div><svg class="icon"><use href="#i-people"></use></svg><span id="dialogAssignee"></span></div></div><button type="submit" class="button primary-button full-button">Done</button></form></dialog>
+</body>
+</html>
