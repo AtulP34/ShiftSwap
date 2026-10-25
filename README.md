@@ -44,3 +44,5 @@ pytest
 | `notify.py` | Notification bell |
 | `frontend/` | Single-page app (`index.html`, `app.js`, `tailwind.css`) |
 | `tests/` | pytest tests |
+
+For the availability and notifications module contracts and integration notes, see [BACKEND_HANDOFF.md](BACKEND_HANDOFF.md).

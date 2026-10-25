@@ -29,3 +29,28 @@
 - [ ] `requests_flow.py`
 - [ ] `frontend/app.js`
 - [ ] new tests
+
+
+## 2026-10-24: Integrate availability and notifications with latest main
+
+- **Tool:** Codex
+- **Scope:** The two-module half from PR #2: `availability.py` and `notify.py`.
+- **Base:** `3e458dd7637ed1f4ca6024c0305fd43bd77ff423`.
+
+**Summary:** Integrated PR #2's availability and notification helpers with
+the latest main version, preserving its matching, request processing,
+frontend wiring, and database files. Availability rejects malformed,
+nonpositive, and overnight windows with false. Added regression coverage
+for availability boundaries and isolation, notification persistence and
+read counts, and notification API authentication and user ownership.
+**Verification:** All 47 tests passed against the integrated version.
+
+Documented stable interfaces, the original two-of-four module scope, and
+the notification helper's commit behavior in `BACKEND_HANDOFF.md`.
+
+### Reviewed by me
+
+- [ ] `availability.py`
+- [ ] `notify.py`
+- [ ] availability and notification tests
+- [ ] `BACKEND_HANDOFF.md`
