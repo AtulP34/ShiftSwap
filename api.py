@@ -49,6 +49,10 @@ def login_required(route):
     def wrapper(*args, **kwargs):
         if me() is None:
             return error("Not logged in", 401)
+        # a cookie can outlive its user (e.g. after `flask init-db`); treat that as logged out
+        if not query("SELECT 1 FROM users WHERE id = ?", (me(),), one=True):
+            session.clear()
+            return error("Not logged in", 401)
         return route(*args, **kwargs)
     return wrapper
 
