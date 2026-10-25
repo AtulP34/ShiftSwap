@@ -18,31 +18,39 @@
 # MVP limit: assume a shift starts and ends on the same date. Overnight
 # availability is stored as two rows, and supporting overnight shifts here
 # is a stretch goal.
-#
-# Use query() from db for reads.
+
+from datetime import date
+
+from db import query
 
 
-# TODO overlaps(a_start, a_end, b_start, b_end) -> bool
-#   True if the two ranges share any time.
-#   Touching ends do NOT count: 09:00-12:00 and 12:00-15:00 don't overlap.
-#   One line: a_start < b_end and b_start < a_end
-#   matching.has_conflict() needs this too, so import it there.
+def overlaps(a_start, a_end, b_start, b_end):
+    # touching ends don't count: 09:00-12:00 and 12:00-15:00 don't overlap
+    return a_start < b_end and b_start < a_end
 
 
-# TODO is_available(user_id, start, end) -> bool
-#   1. Split start/end into date + 'HH:MM', and get the weekday from the date.
-#   2. Load that user's 'unavailable' exceptions for that date.
-#      If ANY of them overlaps the shift -> False. Unavailable always wins.
-#   3. Build the list of "free" windows:
-#        weekly rows for that weekday
-#      + 'available' exceptions for that date
-#   4. Return True only if ONE window covers the WHOLE shift:
-#        window.start_time <= shift_start and window.end_time >= shift_end
-#      Partial coverage (free 09:00-11:00 for a 09:00-12:00 shift) -> False.
-#      Don't stitch adjacent windows together; keep it simple.
-#
-#   Tests to write (tests/test_availability.py):
-#     - partial availability is rejected
-#     - an unavailable exception overrides a weekly window
-#     - an available exception adds a window on a day with no weekly rows
-#     - a shift exactly matching a window's edges is accepted
+def is_available(user_id, start, end):
+    day, shift_start = start.split("T")
+    end_day, shift_end = end.split("T")
+    if end_day != day:
+        return False  # overnight shifts aren't supported yet (see MVP limit above)
+    weekday = date.fromisoformat(day).weekday()
+
+    exceptions = query(
+        "SELECT start_time, end_time, kind FROM availability_exceptions WHERE user_id = ? AND date = ?",
+        (user_id, day),
+    )
+
+    # unavailable always wins
+    for ex in exceptions:
+        if ex["kind"] == "unavailable" and overlaps(ex["start_time"], ex["end_time"], shift_start, shift_end):
+            return False
+
+    windows = list(query(
+        "SELECT start_time, end_time FROM availability_weekly WHERE user_id = ? AND weekday = ?",
+        (user_id, weekday),
+    ))
+    windows += [ex for ex in exceptions if ex["kind"] == "available"]
+
+    # one window has to cover the whole shift; no stitching windows together
+    return any(w["start_time"] <= shift_start and w["end_time"] >= shift_end for w in windows)

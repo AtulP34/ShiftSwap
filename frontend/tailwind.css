@@ -186,3 +186,45 @@
 .preview-signout-copy { color: var(--ink-2); }
 .empty.agenda-empty { min-height: 128px; }
 .empty.command-empty { min-height: 92px; }
+
+/* --- connected app: sign-in, workplaces, roles, notifications, request timeline --- */
+.gate{min-height:100vh;display:grid;place-items:center;padding:32px 16px;background:var(--canvas)}
+.gate-card{width:min(400px,100%);padding:32px}
+.gate-brand{padding:0;margin-bottom:24px}
+.gate-title{font-size:22px;line-height:28px;font-weight:600;letter-spacing:-.02em;margin:0}
+.gate-sub{margin:6px 0 0;color:var(--ink-2);font-size:13px}
+.gate-switch{margin:0;font-size:13px;color:var(--ink-2);text-align:center}
+.gate-divider{display:flex;align-items:center;gap:12px;color:var(--ink-3-readable);font-size:12px}
+.gate-divider::before,.gate-divider::after{content:"";flex:1;height:1px;background:var(--hairline)}
+.link-button{border:0;background:none;padding:0;color:var(--accent);font-weight:550;font-size:inherit}
+.link-button:hover{text-decoration:underline}
+.textarea{height:auto;padding:8px 12px;resize:vertical;font:inherit}
+.manager-side{display:grid;gap:16px}
+.inline-form{display:flex;gap:8px;padding:12px 16px;border-top:1px solid var(--hairline)}
+.inline-form.flush{padding:0;border-top:0}
+.inline-form .field{flex:1}
+.inline-form .button{height:36px}
+.roles-list{display:flex;flex-wrap:wrap;gap:6px;padding:12px 16px}
+.roles-list:empty::before{content:"No roles yet. Add one so you can schedule shifts.";color:var(--ink-3-readable);font-size:13px}
+.person-row{height:auto;min-height:64px;padding-top:10px;padding-bottom:10px;flex-wrap:wrap}
+.person-roles{display:flex;flex-wrap:wrap;gap:4px;align-items:center}
+.role-add{height:24px;font-size:12px;border:1px dashed var(--hairline-strong);border-radius:6px;background:transparent;padding:0 6px;color:var(--ink-2);max-width:120px}
+.workspace-list{display:grid;gap:6px}
+.workspace-option{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;min-height:44px;padding:8px 12px;border:1px solid var(--hairline);border-radius:8px;background:var(--surface);text-align:left}
+.workspace-option[aria-current="true"]{border-color:var(--accent);background:var(--accent-tint)}
+.workspace-option small{color:var(--ink-3-readable);font-size:12px}
+.notif-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}
+.notif-head .link-button{font-size:12px}
+.notif-list{max-height:320px;overflow:auto;margin:0 -8px}
+.notif-item{display:block;width:100%;border:0;background:transparent;text-align:left;padding:8px;border-radius:8px;font-size:13px;color:var(--ink-2)}
+.notif-item:hover{background:var(--hover-fill)}
+.notif-item.unread{color:var(--ink-1);font-weight:500}
+.notif-item small{display:block;color:var(--ink-3-readable);font-size:11px;font-weight:400;margin-top:2px}
+.notif-empty{padding:16px 8px;color:var(--ink-3-readable);font-size:13px}
+.request-row .request-main{cursor:pointer}
+.reasons{margin:4px 0 0;color:var(--declined);font-size:12px}
+.timeline{list-style:none;margin:24px 0 0;padding:0 24px;display:grid;gap:12px;border-top:1px solid var(--hairline);padding-top:16px}
+.timeline li{display:grid;gap:2px;font-size:13px}
+.timeline small{color:var(--ink-3-readable);font-size:12px}
+.timeline .note{color:var(--ink-2);font-style:italic}
+.loading{opacity:.6;pointer-events:none}

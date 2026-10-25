@@ -1,1 +1,13 @@
 checklist.md
+
+# local database (flask init-db creates it here)
+instance/
+
+# Python caches
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# virtual environments
+.venv/
+venv/

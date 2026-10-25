@@ -9,14 +9,18 @@
 # Table: notifications (user_id, message, link, is_read 0/1, created_at).
 # Small file, each function is one query.
 
-
-# TODO notify(user_id, message, link=None) -> None
-#   Insert one unread row. link is a frontend path like '/requests/12'.
+from db import execute, query
 
 
-# TODO unread_count(user_id) -> int
-#   COUNT(*) where is_read = 0. Return a plain int, not a Row.
+def notify(user_id, message, link=None):
+    # link is a frontend path like '/requests/12'
+    execute("INSERT INTO notifications (user_id, message, link) VALUES (?, ?, ?)", (user_id, message, link))
 
 
-# TODO mark_read(user_id) -> None
-#   Set is_read = 1 on all of this user's notifications.
+def unread_count(user_id):
+    row = query("SELECT COUNT(*) AS n FROM notifications WHERE user_id = ? AND is_read = 0", (user_id,), one=True)
+    return row["n"]
+
+
+def mark_read(user_id):
+    execute("UPDATE notifications SET is_read = 1 WHERE user_id = ? AND is_read = 0", (user_id,))
