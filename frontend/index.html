@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>ShiftSwap · Team schedule</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;450;500;550;600;650;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./tailwind.css">
+</head>
+<body>
+  <svg class="icon-sprite" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+    <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4m10-4v4M3 10h18"/></symbol>
+    <symbol id="i-repeat" viewBox="0 0 24 24"><path d="m17 2 4 4-4 4M3 11V8a2 2 0 0 1 2-2h16M7 22l-4-4 4-4m14-1v3a2 2 0 0 1-2 2H3"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+    <symbol id="i-users" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm13 10v-2a4 4 0 0 0-3-3.9M16 3.2a4 4 0 0 1 0 7.6"/></symbol>
+    <symbol id="i-chevrons" viewBox="0 0 24 24"><path d="m8 9 4-4 4 4m-8 6 4 4 4-4"/></symbol>
+    <symbol id="i-chevron-left" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></symbol>
+    <symbol id="i-chevron-right" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.7" cy="10.7" r="7.2"/><path d="m16.1 16.1 5 5"/></symbol>
+    <symbol id="i-bell" viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="m5 5 14 14M19 5 5 19"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+    <symbol id="i-inbox" viewBox="0 0 24 24"><path d="M3 4h18v15H3V4Zm0 10h5l2 3h4l2-3h5"/></symbol>
+    <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5m0-8h.01"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></symbol>
+    <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></symbol>
+    <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 16.5A8 8 0 0 1 7.5 4a8 8 0 1 0 12.5 12.5Z"/></symbol>
+  </svg>
+  <div class="gate" id="gate" hidden>
+    <div class="gate-card surface">
+      <div class="brand gate-brand"><svg class="brand-symbol" viewBox="0 0 24 24"><path d="M3 8h17l-4-4m4 4-4 4M21 16H4l4-4m-4 4 4 4"/></svg>ShiftSwap</div>
+      <form id="loginForm" class="form-grid">
+        <div><h1 class="gate-title">Sign in</h1><p class="gate-sub">Trade shifts with your team.</p></div>
+        <div class="form-field"><label for="loginEmail">Email</label><input class="field" type="email" id="loginEmail" autocomplete="email" required></div>
+        <div class="form-field"><label for="loginPassword">Password</label><input class="field" type="password" id="loginPassword" autocomplete="current-password" required></div>
+        <p class="form-error" id="loginError" hidden></p>
+        <button class="button primary" type="submit">Sign in</button>
+        <p class="gate-switch">New here? <button type="button" class="link-button" id="showRegister">Create an account</button></p>
+      </form>
+      <form id="registerForm" class="form-grid" hidden>
+        <div><h1 class="gate-title">Create account</h1><p class="gate-sub">You can create or join a workplace next.</p></div>
+        <div class="form-field"><label for="registerName">Name</label><input class="field" type="text" id="registerName" autocomplete="name" maxlength="64" required></div>
+        <div class="form-field"><label for="registerEmail">Email</label><input class="field" type="email" id="registerEmail" autocomplete="email" required></div>
+        <div class="form-field"><label for="registerPassword">Password</label><input class="field" type="password" id="registerPassword" autocomplete="new-password" minlength="6" required></div>
+        <p class="form-error" id="registerError" hidden></p>
+        <button class="button primary" type="submit">Create account</button>
+        <p class="gate-switch">Have an account? <button type="button" class="link-button" id="showLogin">Sign in</button></p>
+      </form>
+      <div id="setupPanel" class="form-grid" hidden>
+        <div><h1 class="gate-title">Set up your workplace</h1><p class="gate-sub">Join your team with an invite code, or create a workplace if you're the manager.</p></div>
+        <form id="setupJoinForm" class="form-grid"><div class="form-field"><label for="setupJoinCode">Invite code</label><input class="field" type="text" id="setupJoinCode" maxlength="12" autocomplete="off" required placeholder="e.g. 7KQ2XD"></div><button class="button primary" type="submit">Join workplace</button></form>
+        <div class="gate-divider"><span>or</span></div>
+        <form id="setupCreateForm" class="form-grid"><div class="form-field"><label for="setupCreateName">Workplace name</label><input class="field" type="text" id="setupCreateName" maxlength="64" required placeholder="e.g. Joe's Diner"></div><button class="button secondary" type="submit">Create workplace</button></form>
+        <p class="form-error" id="setupError" hidden></p>
+        <p class="gate-switch">Wrong account? <button type="button" class="link-button" id="setupSignout">Sign out</button></p>
+      </div>
+    </div>
+  </div>
+  <div class="app" id="app" hidden>
+    <aside class="sidebar" id="sidebar" aria-label="Workspace navigation">
+      <a class="brand" href="#schedule"><svg class="brand-symbol" viewBox="0 0 24 24"><path d="M3 8h17l-4-4m4 4-4 4M21 16H4l4-4m-4 4 4 4"/></svg>ShiftSwap</a>
+      <button class="workspace" type="button" id="workspaceButton" title="Switch workplace"><span id="workspaceName">Workplace</span><svg class="icon"><use href="#i-chevrons"></use></svg></button>
+      <div class="sidebar-label">Workspace</div>
+      <nav class="nav-list" id="mainNav" aria-label="Primary">
+        <a class="nav-item" href="#schedule" data-nav="schedule"><svg class="icon"><use href="#i-calendar"></use></svg><span class="nav-name">Schedule</span><span class="nav-hint">G S</span></a>
+        <a class="nav-item" href="#requests" data-nav="requests"><svg class="icon"><use href="#i-repeat"></use></svg><span class="nav-name">Requests</span><span class="nav-count" id="requestNavCount"></span><span class="nav-hint">G R</span></a>
+        <a class="nav-item" href="#availability" data-nav="availability"><svg class="icon"><use href="#i-clock"></use></svg><span class="nav-name">Availability</span><span class="nav-hint">G A</span></a>
+        <a class="nav-item" href="#manager" data-nav="manager" id="managerNav"><svg class="icon"><use href="#i-users"></use></svg><span class="nav-name">Manager</span><span class="nav-count" id="managerNavCount"></span><span class="nav-hint">G M</span></a>
+      </nav>
+      <div class="side-end">
+        <div class="popover" id="userMenu" hidden>
+          <button type="button" id="themeButton"><span>Appearance</span><span id="themeName">System</span></button>
+          <button type="button" id="signoutButton"><span>Sign out</span><svg class="icon"><use href="#i-chevron-right"></use></svg></button>
+        </div>
+        <button type="button" class="profile" id="profileButton" aria-haspopup="menu" aria-expanded="false">
+          <span class="avatar" id="profileAvatar"></span><span class="profile-body"><strong id="profileName"></strong><small id="profileRole">Team member</small></span><svg class="icon"><use href="#i-chevrons"></use></svg>
+        </button>
+      </div>
+    </aside>
+    <div class="mobile-shade" id="mobileShade" hidden></div>
+    <div class="app-main">
+      <header class="topbar">
+        <div class="page-heading-controls"><button class="icon-button mobile-open" id="mobileMenuButton" aria-label="Open navigation" aria-expanded="false"><svg class="icon"><use href="#i-menu"></use></svg></button>
+        <button type="button" class="command-trigger" id="commandTrigger" aria-label="Search or jump to"><svg class="icon"><use href="#i-search"></use></svg><span class="command-text">Search or jump to…</span><span class="keyhint">⌘K</span></button></div>
+        <div class="top-actions"><button class="icon-button" id="notificationButton" type="button" aria-label="Notifications" aria-expanded="false"><svg class="icon"><use href="#i-bell"></use></svg><span class="unread-dot" id="unreadDot"></span></button></div>
+      </header>
+      <div class="notification-menu" id="notificationMenu" hidden><div class="notif-head"><strong>Notifications</strong><button class="link-button" id="markReadButton" type="button">Mark all as read</button></div><div id="notificationList" class="notif-list"></div></div>
+      <main class="content" id="mainContent">
+        <section class="page" id="page-schedule" aria-labelledby="scheduleTitle">
+          <div class="page-head schedule-head">
+            <div><h1 id="scheduleTitle">Team schedule</h1><p>See who’s working and request coverage when plans change.</p></div>
+            <div class="head-controls"><button class="button ghost" id="todayButton" type="button">Today</button><div class="week-control" role="group" aria-label="Schedule week"><button class="icon-button" id="weekPrev" type="button" aria-label="Previous week"><svg class="icon"><use href="#i-chevron-left"></use></svg></button><span class="week-label numeric" id="weekLabel"></span><button class="icon-button" id="weekNext" type="button" aria-label="Next week"><svg class="icon"><use href="#i-chevron-right"></use></svg></button></div></div>
+          </div>
+          <div class="schedule-toolbar"><span class="schedule-overview numeric" id="scheduleOverview">2 shifts · 12 hours</span><div class="segmented" role="group" aria-label="Schedule filter"><button type="button" data-schedule-filter="all" aria-pressed="true">Everyone</button><button type="button" data-schedule-filter="mine" aria-pressed="false">Only my shifts</button></div></div>
+          <div class="calendar-outer" id="calendarOuter"><div class="calendar" id="calendar"></div></div>
+          <div class="agenda" id="agenda"><div class="date-strip" id="dateStrip" aria-label="Choose day"></div><div id="agendaEntries"></div></div>
+          <div class="legend"><span><span class="legend-symbol mine"></span> My shifts</span><span><span class="legend-symbol"></span> Team shifts</span><span><span class="legend-symbol open"></span> Coverage requested</span></div>
+        </section>
+        <section class="page" id="page-requests" hidden aria-labelledby="requestsTitle">
+          <div class="page-head"><div><h1 id="requestsTitle">Requests</h1><p>Review and respond to shift changes.</p></div><button type="button" id="newRequestButton" class="button primary">New request</button></div>
+          <div class="tabbar" role="tablist" aria-label="Request lists" id="requestTabs">
+            <button class="tab" role="tab" id="receivedTab" data-tab="received" aria-selected="true" tabindex="0">Received <span class="count numeric" id="receivedCount"></span></button>
+            <button class="tab" role="tab" id="sentTab" data-tab="sent" aria-selected="false" tabindex="-1">Sent <span class="count numeric" id="sentCount"></span></button>
+            <button class="tab" role="tab" id="historyTab" data-tab="history" aria-selected="false" tabindex="-1">History <span class="count numeric" id="historyCount"></span></button>
+          </div>
+          <div class="surface" role="tabpanel" aria-labelledby="receivedTab" id="requestsList"></div>
+        </section>
+        <section class="page" id="page-availability" hidden aria-labelledby="availabilityTitle">
+          <div class="page-head"><div><h1 id="availabilityTitle">Availability</h1><p>The hours you can work, with exceptions for specific dates.</p></div><div class="head-controls"><span class="pending-change" id="dirtyNotice" hidden>Unsaved changes</span><button type="button" id="saveAvailability" class="button primary" disabled>Save changes</button></div></div>
+          <div class="availability-layout"><section class="surface" aria-labelledby="weeklyTitle"><div class="section-bar"><div><strong id="weeklyTitle">Weekly hours</strong><span class="muted">Repeats weekly</span></div><button class="button ghost small" id="copyMonday" type="button">Copy Monday to weekdays</button></div><div id="weeklyRows"></div></section>
+          <section class="surface" aria-labelledby="overridesTitle"><div class="section-bar"><strong id="overridesTitle">Date overrides</strong><button class="button secondary small" id="addExceptionButton" type="button"><svg class="icon"><use href="#i-plus"></use></svg> Add exception</button></div><div id="exceptionRows" class="exceptions-area"></div><div class="caption">Date exceptions take priority over your weekly hours.</div></section></div>
+        </section>
+        <section class="page" id="page-manager" hidden aria-labelledby="managerTitle">
+          <div class="page-head"><div><h1 id="managerTitle">Manager</h1><p>Review team requests and keep coverage up to date.</p></div><button class="button primary" type="button" id="addShiftButton">Add shift</button></div>
+          <p class="manager-note"><svg class="icon"><use href="#i-info"></use></svg><span>Invite code: <strong class="numeric" id="inviteCode"></strong> · share it so your team can join.</span></p>
+          <div class="manager-layout"><section class="surface" aria-labelledby="approvalsTitle"><div class="section-bar"><div><strong id="approvalsTitle">Awaiting your decision</strong><span class="muted numeric" id="managerCount"></span></div></div><div id="managerDecisions"></div></section>
+          <div class="manager-side"><section class="surface" aria-labelledby="peopleTitle"><div class="section-bar"><div><strong id="peopleTitle">People</strong><span class="muted numeric" id="peopleCount"></span></div></div><div id="peopleList"></div></section>
+          <section class="surface" aria-labelledby="rolesTitle"><div class="section-bar"><div><strong id="rolesTitle">Roles</strong><span class="muted">Who's trained for what</span></div></div><div id="rolesList" class="roles-list"></div><form id="addRoleForm" class="inline-form"><input class="field" type="text" id="addRoleName" maxlength="40" placeholder="New role, e.g. Cook" aria-label="New role name" required><button class="button secondary small" type="submit"><svg class="icon"><use href="#i-plus"></use></svg> Add</button></form></section></div></div>
+        </section>
+      </main>
+      <footer class="footer"><span>ShiftSwap · schedule changes only take effect after a manager approves them</span><span class="footer-links"><a href="#" id="privacyLink">Privacy</a><a href="#" id="termsLink">Terms</a></span></footer>
+    </div>
+  </div>
+  <dialog class="sheet" id="shiftSheet" aria-labelledby="sheetTitle"><div class="dialog-header"><h2 id="sheetTitle">Shift details</h2><button type="button" class="icon-button" data-close="shiftSheet" aria-label="Close shift details"><svg class="icon"><use href="#i-x"></use></svg></button></div><dl class="sheet-details"><dt>Date</dt><dd id="sheetDate"></dd><dt>Hours</dt><dd id="sheetTime"></dd><dt>Assigned to</dt><dd id="sheetPerson"></dd><dt>Status</dt><dd id="sheetStatus"></dd></dl><div class="sheet-footer"><button class="button secondary" id="requestCoverageFromSheet" type="button">Request coverage</button></div></dialog>
+  <dialog class="modal" id="requestDialog" aria-labelledby="requestDialogTitle"><form id="requestForm"><div class="dialog-header"><h2 id="requestDialogTitle">New request</h2><button type="button" class="icon-button" data-close="requestDialog" aria-label="Close"><svg class="icon"><use href="#i-x"></use></svg></button></div><div class="dialog-body"><div class="form-grid"><div class="form-field"><label for="requestKind">Request type</label><select class="field" id="requestKind"><option value="coverage">Shift coverage</option><option value="swap">Shift swap</option></select></div><div class="form-field"><label for="requestShift">Your shift</label><select class="field" id="requestShift" required></select></div><div class="form-field" id="requestTeammateField"><label for="requestTeammate">Send to</label><select class="field" id="requestTeammate"></select></div><div class="form-field" id="requestOfferedField" hidden><label for="requestOffered">Their shift</label><select class="field" id="requestOffered"></select></div><p class="form-help" id="requestHelp"></p><p class="form-error" id="requestFormError" hidden></p></div></div><div class="dialog-footer"><button type="button" class="button secondary" data-close="requestDialog">Cancel</button><button type="submit" class="button primary">Create request</button></div></form></dialog>
+  <dialog class="modal" id="exceptionDialog" aria-labelledby="exceptionDialogTitle"><form id="exceptionForm"><div class="dialog-header"><h2 id="exceptionDialogTitle">Add date override</h2><button class="icon-button" type="button" data-close="exceptionDialog" aria-label="Close"><svg class="icon"><use href="#i-x"></use></svg></button></div><div class="dialog-body"><div class="form-grid"><div class="form-field"><label for="exceptionDate">Date</label><input type="date" class="field" id="exceptionDate" required></div><div class="form-field"><label for="exceptionKind">Override</label><select class="field" id="exceptionKind"><option value="unavailable">Unavailable</option><option value="available">Available</option></select></div><div class="form-row"><div class="form-field"><label for="exceptionStart">Start</label><select id="exceptionStart" class="field"></select></div><div class="form-field"><label for="exceptionEnd">End</label><select id="exceptionEnd" class="field"></select></div></div><p class="form-error" id="exceptionFormError" hidden></p></div></div><div class="dialog-footer"><button class="button secondary" type="button" data-close="exceptionDialog">Cancel</button><button class="button primary" type="submit">Add override</button></div></form></dialog>
+  <dialog class="modal" id="addShiftDialog" aria-labelledby="addShiftDialogTitle"><form id="addShiftForm"><div class="dialog-header"><h2 id="addShiftDialogTitle">Add shift</h2><button type="button" class="icon-button" data-close="addShiftDialog" aria-label="Close"><svg class="icon"><use href="#i-x"></use></svg></button></div><div class="dialog-body"><div class="form-grid"><div class="form-field"><label for="addShiftRole">Role</label><select id="addShiftRole" class="field" required></select></div><div class="form-field"><label for="addShiftDate">Date</label><input type="date" id="addShiftDate" class="field" required></div><div class="form-row"><div class="form-field"><label for="addShiftStart">Start</label><select id="addShiftStart" class="field"></select></div><div class="form-field"><label for="addShiftEnd">End</label><select id="addShiftEnd" class="field"></select></div></div><div class="form-field"><label for="addShiftPerson">Team member</label><select class="field" id="addShiftPerson"></select></div><p class="form-error" id="addShiftError" hidden></p></div></div><div class="dialog-footer"><button class="button secondary" type="button" data-close="addShiftDialog">Cancel</button><button class="button primary" type="submit">Add shift</button></div></form></dialog>
+  <dialog class="palette" id="commandDialog" aria-label="Command palette"><div class="palette-search"><svg class="icon"><use href="#i-search"></use></svg><input type="text" id="commandInput" placeholder="Search pages and actions" autocomplete="off" aria-label="Search commands"><button type="button" class="icon-button" data-close="commandDialog" aria-label="Close command palette"><svg class="icon"><use href="#i-x"></use></svg></button></div><div class="palette-results" id="commandResults" role="listbox"></div><div class="palette-footer">↑ ↓ to navigate · Enter to select · Esc to close</div></dialog>
+  <dialog class="modal" id="legalDialog" aria-labelledby="legalTitle"><div class="dialog-header"><h2 id="legalTitle"></h2><button class="icon-button" data-close="legalDialog" aria-label="Close"><svg class="icon"><use href="#i-x"></use></svg></button></div><div class="dialog-body"><p id="legalContent" class="legal-copy"></p></div><div class="dialog-footer"><button class="button secondary" data-close="legalDialog">Close</button></div></dialog>
+  <dialog class="modal" id="signoutDialog" aria-labelledby="signoutTitle"><div class="dialog-header"><h2 id="signoutTitle">Sign out?</h2><button class="icon-button" data-close="signoutDialog" aria-label="Close"><svg class="icon"><use href="#i-x"></use></svg></button></div><div class="dialog-body"><p class="preview-signout-copy">You'll need your email and password to sign back in.</p></div><div class="dialog-footer"><button class="button secondary" data-close="signoutDialog">Cancel</button><button class="button primary" id="confirmSignout">Sign out</button></div></dialog>
+  <dialog class="modal" id="workspaceDialog" aria-labelledby="workspaceDialogTitle"><div class="dialog-header"><h2 id="workspaceDialogTitle">Workplaces</h2><button class="icon-button" type="button" data-close="workspaceDialog" aria-label="Close"><svg class="icon"><use href="#i-x"></use></svg></button></div><div class="dialog-body form-grid"><div id="workspaceList" class="workspace-list"></div>
+    <form id="joinForm" class="inline-form flush"><input class="field" type="text" id="joinCode" maxlength="12" autocomplete="off" placeholder="Invite code" aria-label="Invite code" required><button class="button secondary small" type="submit">Join</button></form>
+    <form id="createForm" class="inline-form flush"><input class="field" type="text" id="createName" maxlength="64" placeholder="New workplace name" aria-label="New workplace name" required><button class="button secondary small" type="submit">Create</button></form>
+    <p class="form-error" id="workspaceError" hidden></p></div></dialog>
+  <dialog class="modal" id="rejectDialog" aria-labelledby="rejectTitle"><form id="rejectForm"><div class="dialog-header"><h2 id="rejectTitle">Reject request</h2><button class="icon-button" type="button" data-close="rejectDialog" aria-label="Close"><svg class="icon"><use href="#i-x"></use></svg></button></div><div class="dialog-body"><div class="form-field"><label for="rejectNote">Reason (optional)</label><textarea class="field textarea" id="rejectNote" maxlength="300" rows="3" placeholder="Shown to both people"></textarea></div><p class="form-error" id="rejectError" hidden></p></div><div class="dialog-footer"><button class="button secondary" type="button" data-close="rejectDialog">Cancel</button><button class="button primary" type="submit">Reject</button></div></form></dialog>
+  <dialog class="modal" id="detailDialog" aria-labelledby="detailTitle"><div class="dialog-header"><h2 id="detailTitle">Request</h2><button class="icon-button" type="button" data-close="detailDialog" aria-label="Close"><svg class="icon"><use href="#i-x"></use></svg></button></div><div class="dialog-body"><dl class="sheet-details" id="detailFacts"></dl><ol class="timeline" id="detailTimeline"></ol></div></dialog>
+  <div class="toast" role="status" aria-live="polite" id="toast" hidden><span id="toastText"></span><button class="button ghost small" id="toastUndo" type="button" hidden>Undo</button></div>
+<script src="./app.js"></script>
+</body>
+</html>

@@ -21,6 +21,8 @@ from requests_flow import accept, approve, cancel, create_request, decline, mana
 
 # serving the frontend from the same origin means no CORS setup
 app = Flask(__name__, static_folder="frontend", static_url_path="")
+# sessions need a secret key; set SECRET_KEY for anything beyond local dev
+app.secret_key = os.environ.get("SECRET_KEY", "dev")
 db.init_app(app)
 
 
@@ -39,7 +41,7 @@ def rows(result):
 
 def body(*required):
     data = request.get_json(silent=True) or {}
-    missing = [f for f in required if data.get(f) is (None, "")]
+    missing = [f for f in required if data.get(f) in (None, "")]
     return data, missing
 
 def login_required(route):
@@ -65,7 +67,9 @@ def is_manager(workplace_id):
 
 SHIFT_SELECT = """
     SELECT s.id, s.workplace_id, s.role_id, r.name AS role_name,
-           s.assignee_id, u.name AS assignee_name, s.start_dt, s.end_dt
+           s.assignee_id, u.name AS assignee_name, s.start_dt, s.end_dt,
+           (SELECT COUNT(*) FROM requests rq
+             WHERE rq.shift_id = s.id AND rq.status IN ('awaiting_coworker', 'awaiting_manager')) AS open_requests
     FROM shifts s
     JOIN roles r ON r.id = s.role_id
     JOIN users u ON u.id = s.assignee_id
@@ -74,7 +78,7 @@ SHIFT_SELECT = """
 def load_shift(shift_id):
     return query(SHIFT_SELECT + " WHERE s.id = ?", (shift_id,), one=True)
 
-def shift_where(condition, args, start=None, end=None):
+def shifts_where(condition, args, start=None, end=None):
     sql = SHIFT_SELECT + " WHERE " + condition
     if start:
         sql += " AND s.end_dt > ?"
@@ -82,7 +86,7 @@ def shift_where(condition, args, start=None, end=None):
     if end:
         sql += " AND s.start_dt < ?"
         args += (end,)
-    sql += "ORDER BY s.start_dt"
+    sql += " ORDER BY s.start_dt"
     return rows(query(sql, args))
 
 

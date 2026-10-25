@@ -12,3 +12,45 @@
 - [ ] `schema.sql`
 - [ ] `db.py`
 - [ ] `tests/test_schema.py`
+
+## 2026-10-24: Logic modules, frontend wiring, tests
+
+- **Tool:** Claude Code (Claude Opus 5.5)
+- **Files generated:** `availability.py`, `matching.py`, `notify.py`, `requests_flow.py` (implemented from their TODO specs), `frontend/app.js` (rewired from sample data to the API), `tests/conftest.py`, `tests/test_availability.py`, `tests/test_matching.py`, `tests/test_requests_flow.py`, `README.md`, `requirements.txt`, `.gitignore`
+- **Files edited:** `api.py`, `frontend/index.html`, `frontend/tailwind.css`
+
+**Summary:** Claude Code filled in the four modules that `api.py` imports, following the TODO comments in each file. Availability checks whether one window covers the whole shift, and unavailable exceptions always win. Matching collects every reason someone can't take a shift. The request state machine uses an ALLOWED transition map and logs every change to `request_events`. `approve()` re-validates, then updates `shifts` in one transaction and cancels other open requests on those shifts. In `api.py` it fixed `is` → `in` in `body()` (required fields were never checked), renamed `shift_where` → `shifts_where` (callers used that name), added a missing space before `ORDER BY`, added a `SECRET_KEY` (sessions crashed without one), and added an `open_requests` count to shift rows. The frontend now signs in or registers, creates or joins workplaces, and loads the schedule, requests, availability, notifications, and the manager queue from the API. The manager page gained roles, role assignment, and the invite code. The request dialog only offers eligible coworkers and swap shifts. 22 new tests cover the cases listed in the TODOs. All 29 tests pass, and the full coverage flow was checked in a browser.
+
+### Reviewed by me
+
+- [ ] `availability.py`
+- [ ] `matching.py`
+- [ ] `notify.py`
+- [ ] `requests_flow.py`
+- [ ] `frontend/app.js`
+- [ ] new tests
+
+
+## 2026-10-24: Integrate availability and notifications with latest main
+
+- **Tool:** Codex
+- **Scope:** The two-module half from PR #2: `availability.py` and `notify.py`.
+- **Base:** `3e458dd7637ed1f4ca6024c0305fd43bd77ff423`.
+
+**Summary:** Integrated PR #2's availability and notification helpers with
+the latest main version, preserving its matching, request processing,
+frontend wiring, and database files. Availability rejects malformed,
+nonpositive, and overnight windows with false. Added regression coverage
+for availability boundaries and isolation, notification persistence and
+read counts, and notification API authentication and user ownership.
+**Verification:** All 47 tests passed against the integrated version.
+
+Documented stable interfaces, the original two-of-four module scope, and
+the notification helper's commit behavior in `BACKEND_HANDOFF.md`.
+
+### Reviewed by me
+
+- [ ] `availability.py`
+- [ ] `notify.py`
+- [ ] availability and notification tests
+- [ ] `BACKEND_HANDOFF.md`
