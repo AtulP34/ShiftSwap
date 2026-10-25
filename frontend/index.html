@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;450;500;550;600;650;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="./tailwind.css">
+  <link rel="stylesheet" href="/tailwind.css">
 </head>
 <body>
   <svg class="icon-sprite" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
@@ -138,6 +138,7 @@
   <dialog class="modal" id="rejectDialog" aria-labelledby="rejectTitle"><form id="rejectForm"><div class="dialog-header"><h2 id="rejectTitle">Reject request</h2><button class="icon-button" type="button" data-close="rejectDialog" aria-label="Close"><svg class="icon"><use href="#i-x"></use></svg></button></div><div class="dialog-body"><div class="form-field"><label for="rejectNote">Reason (optional)</label><textarea class="field textarea" id="rejectNote" maxlength="300" rows="3" placeholder="Shown to both people"></textarea></div><p class="form-error" id="rejectError" hidden></p></div><div class="dialog-footer"><button class="button secondary" type="button" data-close="rejectDialog">Cancel</button><button class="button primary" type="submit">Reject</button></div></form></dialog>
   <dialog class="modal" id="detailDialog" aria-labelledby="detailTitle"><div class="dialog-header"><h2 id="detailTitle">Request</h2><button class="icon-button" type="button" data-close="detailDialog" aria-label="Close"><svg class="icon"><use href="#i-x"></use></svg></button></div><div class="dialog-body"><dl class="sheet-details" id="detailFacts"></dl><ol class="timeline" id="detailTimeline"></ol></div></dialog>
   <div class="toast" role="status" aria-live="polite" id="toast" hidden><span id="toastText"></span><button class="button ghost small" id="toastUndo" type="button" hidden>Undo</button></div>
-<script src="./app.js"></script>
+<script src="/app.js"></script>
 </body>
 </html>
+
